@@ -1,0 +1,8 @@
+#!/bin/bash
+# FILENAME: ferret_job_file
+
+# Change to the directory from which you originally submitted this job.
+cd $SLURM_SUBMIT_DIR
+
+# run the silent.oh container
+apptainer run --nv ferret.sif

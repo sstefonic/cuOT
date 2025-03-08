@@ -1,0 +1,33 @@
+Bootstrap:docker
+From: nvidia/cuda:12.3.2-devel-ubuntu22.04
+%post
+    apt-get update && \
+        apt-get -y install build-essential python3 cmake git libssl-dev vim
+
+%files
+    gpu /home/gpuot/gpu
+    ferret /home/gpuot/ferret
+
+%post
+    cd /home/gpuot/gpu
+    make -j -s
+
+    cd /home/gpuot/ferret
+    git clone https://github.com/emp-toolkit/emp-tool.git
+    cd /home/gpuot/ferret/emp-tool
+    git checkout 44b1dde
+    cmake -DCMAKE_INSTALL_PREFIX=../lib
+    make -j4
+    make install
+
+    cd /home/gpuot/ferret/emp-ot
+    cmake -DCMAKE_INSTALL_PREFIX=../lib -DCMAKE_C_FLAGS='-O3' -DCMAKE_CUDA_FLAGS='-O3'
+    make -j4
+    make install
+
+    cd /home/gpuot/ferret
+    chmod +x ferret.sh
+ 
+%runscript
+    cd /home/gpuot/ferret
+    ./ferret.sh
